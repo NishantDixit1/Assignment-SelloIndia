@@ -13,8 +13,13 @@ const CartItems = () => {
   useEffect(() => {
     const fetchCartItems = async () => {
       const userId = sessionStorage.getItem('userId');
+
+      // If user is not logged in, load cart items from localStorage
       if (!userId) {
-        setError('Please login to view cart');
+        const savedCart = localStorage.getItem('cart');
+        if (savedCart) {
+          setCartItems(JSON.parse(savedCart));
+        }
         setLoading(false);
         return;
       }
@@ -46,7 +51,7 @@ const CartItems = () => {
         const productPromises = Object.values(groupedItems).map(async (item) => {
           const productResponse = await fetch(`https://ecommercebackend-8gx8.onrender.com/product/${item.productId}`);
           const productData = await productResponse.json();
-          
+
           if (productData.success) {
             return {
               ...productData.product,
@@ -70,10 +75,25 @@ const CartItems = () => {
     fetchCartItems();
   }, []);
 
+  useEffect(() => {
+    // Update cartItems from localStorage if it changes
+    const handleStorageChange = () => {
+      const savedCart = localStorage.getItem('cart');
+      if (savedCart) {
+        setCartItems(JSON.parse(savedCart));
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
+
   const handleQuantityChange = async (itemId, change) => {
     const item = cartItems.find(item => item._id === itemId);
     const newQuantity = item.quantity + change;
-    
+
     if (newQuantity >= 1) {
       try {
         const userId = sessionStorage.getItem('userId');
@@ -118,7 +138,7 @@ const CartItems = () => {
           productId: itemId
         })
       });
-      
+
       const data = await response.json();
       if (data.success) {
         setCartItems(cartItems.filter(item => item._id !== itemId));
@@ -153,97 +173,97 @@ const CartItems = () => {
 
   return (
     <>
-        <div className="space-y-4">
-      <div className="bg-pink-100 p-4 md:p-6 space-y-4">
-        {cartItems.map((item) => (
-          <div
-            key={item._id}
-            className="flex flex-col md:flex-row items-center justify-between bg-white p-4 shadow-sm rounded-md space-y-4 md:space-y-0"
-          >
-            {/* Product Info Section */}
-            <div className="flex items-center space-x-4">
-              <div className="w-16 h-16 bg-gray-300 rounded-md flex-shrink-0">
-                <img
-                  src={item.img}
-                  alt={item.name}
-                  className="w-full h-full object-cover rounded-md"
-                />
+      <div className="space-y-4">
+        <div className="bg-pink-100 p-4 md:p-6 space-y-4">
+          {cartItems.map((item) => (
+            <div
+              key={item._id}
+              className="flex flex-col md:flex-row items-center justify-between bg-white p-4 shadow-sm rounded-md space-y-4 md:space-y-0"
+            >
+              {/* Product Info Section */}
+              <div className="flex items-center space-x-4">
+                <div className="w-16 h-16 bg-gray-300 rounded-md flex-shrink-0">
+                  <img
+                    src={item.img}
+                    alt={item.name}
+                    className="w-full h-full object-cover rounded-md"
+                  />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-sm md:text-base">
+                    {item.name}
+                  </h3>
+                  <p className="text-xs md:text-sm text-gray-500">{item.description}</p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-semibold text-sm md:text-base">
-                  {item.name}
-                </h3>
-                <p className="text-xs md:text-sm text-gray-500">{item.description}</p>
-              </div>
-            </div>
 
-            {/* Price and Quantity Section */}
-            <div className="flex items-center space-x-4 md:space-x-6">
-              <span className="font-medium text-sm md:text-base">
-                Rs. {item.price}
-              </span>
-              <div className="flex items-center border px-2 py-1 rounded-md">
-                <button 
-                  onClick={() => handleQuantityChange(item._id, -1)}
-                  className="px-2 text-sm md:text-lg font-semibold"
+              {/* Price and Quantity Section */}
+              <div className="flex items-center space-x-4 md:space-x-6">
+                <span className="font-medium text-sm md:text-base">
+                  Rs. {item.price}
+                </span>
+                <div className="flex items-center border px-2 py-1 rounded-md">
+                  <button
+                    onClick={() => handleQuantityChange(item._id, -1)}
+                    className="px-2 text-sm md:text-lg font-semibold"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="text"
+                    value={item.quantity}
+                    readOnly
+                    className="w-8 text-center text-xs md:text-sm border-none outline-none"
+                  />
+                  <button
+                    onClick={() => handleQuantityChange(item._id, 1)}
+                    className="px-2 text-sm md:text-lg font-semibold"
+                  >
+                    +
+                  </button>
+                </div>
+                <span className="font-medium text-sm md:text-base">
+                  Rs. {(parseFloat(item.price.replace(/[^\d.]/g, '')) * item.quantity).toFixed(2)}
+                </span>
+                <button
+                  onClick={() => handleRemoveItem(item._id)}
+                  className="text-red-500"
                 >
-                  -
-                </button>
-                <input
-                  type="text"
-                  value={item.quantity}
-                  readOnly
-                  className="w-8 text-center text-xs md:text-sm border-none outline-none"
-                />
-                <button 
-                  onClick={() => handleQuantityChange(item._id, 1)}
-                  className="px-2 text-sm md:text-lg font-semibold"
-                >
-                  +
+                  <FontAwesomeIcon icon={faTrash} className="hover:bg-red-300" />
                 </button>
               </div>
-              <span className="font-medium text-sm md:text-base">
-                Rs. {(parseFloat(item.price.replace(/[^\d.]/g, '')) * item.quantity).toFixed(2)}
-              </span>
-              <button 
-                onClick={() => handleRemoveItem(item._id)}
-                className="text-red-500"
-              >
-                <FontAwesomeIcon icon={faTrash} className="hover:bg-red-300" />
-              </button>
             </div>
+          ))}
+        </div>
+
+        <div className="bg-pink-100 p-4 md:p-6 shadow-md rounded-md">
+          <h3 className="text-base md:text-lg font-semibold mb-2">
+            Do you have a voucher?
+          </h3>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 mb-4">
+            <input
+              type="text"
+              placeholder="Enter the code"
+              value={voucher}
+              onChange={(e) => setVoucher(e.target.value)}
+              className="flex-grow border p-2 rounded-md outline-none text-sm md:text-base"
+            />
+            <button className="bg-black text-white px-4 py-2 rounded-md text-sm md:text-base hover:bg-gray-500">
+              Redeem
+            </button>
           </div>
-        ))}
-      </div>
-
-      <div className="bg-pink-100 p-4 md:p-6 shadow-md rounded-md">
-        <h3 className="text-base md:text-lg font-semibold mb-2">
-          Do you have a voucher?
-        </h3>
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 mb-4">
-          <input
-            type="text"
-            placeholder="Enter the code"
-            value={voucher}
-            onChange={(e) => setVoucher(e.target.value)}
-            className="flex-grow border p-2 rounded-md outline-none text-sm md:text-base"
-          />
-          <button className="bg-black text-white px-4 py-2 rounded-md text-sm md:text-base hover:bg-gray-500">
-            Redeem
-          </button>
+          <div className="text-gray-600 space-y-2 text-sm md:text-base">
+            <p>Subtotal: Rs. {calculateTotal()}</p>
+            <p>Shipping: Rs. 0.00</p>
+            <h4 className="text-base md:text-lg font-semibold">Total: Rs. {calculateTotal()}</h4>
+          </div>
+          <Link to="/checkout" className="block">
+            <button className="bg-black text-white w-full py-2 rounded-md mt-4 text-sm md:text-base hover:bg-gray-500">
+              Proceed to Checkout
+            </button>
+          </Link>
         </div>
-        <div className="text-gray-600 space-y-2 text-sm md:text-base">
-          <p>Subtotal: Rs. {calculateTotal()}</p>
-          <p>Shipping: Rs. 0.00</p>
-          <h4 className="text-base md:text-lg font-semibold">Total: Rs. {calculateTotal()}</h4>
-        </div>
-        <Link to="/checkout" className="block">
-          <button className="bg-black text-white w-full py-2 rounded-md mt-4 text-sm md:text-base hover:bg-gray-500">
-            Proceed to Checkout
-          </button>
-        </Link>
       </div>
-    </div>
     </>
   );
 };

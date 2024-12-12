@@ -11,7 +11,7 @@ const ShoppingCartPage = () => {
   return (
     <>
     <Helmet>
-      <title>Cart | Mera Bestie</title>
+      <title>Cart | Surprise me</title>
     </Helmet>
     <Navbar />
     <div className="container mx-auto p-4 md:p-6 space-y-6">
@@ -22,7 +22,7 @@ const ShoppingCartPage = () => {
         <h6 className="font-semibold text-sm md:text-base">
          
             <span> <Link to={"/shop"} className="flex items-center space-x-2  hover:text-gray-500 " >
-            <FontAwesomeIcon icon={faArrowLeft} />Continue Shopping </Link></span>
+            <FontAwesomeIcon icon={faArrowLeft} />  Continue Shopping </Link></span>
           
         </h6>
       </div>

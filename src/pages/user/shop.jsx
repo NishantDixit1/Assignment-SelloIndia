@@ -6,12 +6,11 @@ import { motion } from 'framer-motion';
 import { Helmet } from "react-helmet";
 
 const Shop = () => {
-  const [viewMode, setViewMode] = useState('grid'); // State for toggling between grid and list views
-  const [filteredProducts, setFilteredProducts] = useState([]); // State to hold filtered products
-  const [sortedProducts, setSortedProducts] = useState([]); // State to hold sorted products
-  const [loadMore, setLoadMore] = useState(6); // State for load more functionality
-  const [products, setProducts] = useState([]); // State to hold products from API
-  const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
+  const [viewMode, setViewMode] = useState('grid');
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [sortedProducts, setSortedProducts] = useState([]);
+  const [loadMore, setLoadMore] = useState(6);
+  const [products, setProducts] = useState([]);
 
   const categories = [
     {
@@ -20,7 +19,7 @@ const Shop = () => {
     },
     {
       name: 'Gift Boxes',
-      img:"http://images4.fanpop.com/image/photos/22200000/Christmas-gifts-christmas-gifts-22231235-2048-2048.jpg",
+      img: "http://images4.fanpop.com/image/photos/22200000/Christmas-gifts-christmas-gifts-22231235-2048-2048.jpg",
     },
     {
       name: 'Stationery', 
@@ -34,14 +33,13 @@ const Shop = () => {
         const response = await fetch('https://ecommercebackend-8gx8.onrender.com/get-product');
         const data = await response.json();
         if (data.success) {
-          // Filter out products with empty/null values and hidden products
           const validProducts = data.products.filter(product => 
             product.name && 
             product.price && 
             product.img && 
             product.category &&
             product._id &&
-            product.visibility === "on" // Only show products where visibility is "on"
+            product.visibility === "on"
           );
           setProducts(validProducts);
           setSortedProducts(validProducts);
@@ -52,21 +50,8 @@ const Shop = () => {
     };
 
     fetchProducts();
-
-    // Mouse move event handler to track cursor position
-    const handleMouseMove = (e) => {
-      setCursorPosition({ x: e.clientX, y: e.clientY });
-    };
-
-    document.addEventListener('mousemove', handleMouseMove);
-    
-    // Cleanup the event listener
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-    };
   }, []);
 
-  // Function to filter products by category
   const filterProducts = (category) => {
     if (category === 'all') {
       setFilteredProducts(products);
@@ -76,9 +61,8 @@ const Shop = () => {
     }
   };
 
-  // Function to sort products
   const sortProducts = (sortBy) => {
-    let sorted = [...products]; // Create a copy to avoid mutating state directly
+    let sorted = [...products];
     switch (sortBy) {
       case 'price':
         sorted.sort((a, b) => {
@@ -97,12 +81,10 @@ const Shop = () => {
     setSortedProducts(sorted);
   };
 
-  // Function to load more products
   const handleLoadMore = () => {
     setLoadMore(prevLoadMore => prevLoadMore + 6);
   };
 
-  // Function to show less products
   const handleShowLess = () => {
     setLoadMore(6);
   };
@@ -110,49 +92,47 @@ const Shop = () => {
   return (  
     <>
     <Helmet>
-      <title>Shop | Mera Bestie</title>
+      <title>Shop | Surprise Me</title>
     </Helmet>
     <div className="bg-pink-100">
-      <div className="fixed top-0 left-0 w-full z-50">
+      <div className="relative">
         <Navbar />
       </div>
-      {/* Hero Section */}
       <section
-        className="bg-cover bg-center py-16 text-center"
+        className="bg-cover bg-center py-24 text-center mt-1"
         style={{
           backgroundImage: "url('src/assets/bg shop.png')",
         }}
       >
         <h2 className="text-5xl font-bold text-black">SHOP BY CATEGORY</h2>
-        <p className="text-gray-800 mt-12 text-lg">
+        <p className="text-gray-800 mt-4 text-lg">
           Discover our exclusive collections tailored just for you.
         </p>
       </section>
 
-      {/* Categories Section */}
-      <div className="max-w-7xl mx-auto p-6">
-        <h3 className="text-3xl font-bold mb-4">Categories</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+      <div className="max-w-7xl mx-auto p-4">
+        <h3 className="text-3xl font-bold mb-4 text-center">Categories</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
           {categories.map((category, index) => (
-            <div
+            <motion.div
               key={index}
-              className="bg-white rounded-lg shadow-lg overflow-hidden cursor-pointer"
+              className="bg-white rounded-lg shadow-lg overflow-hidden cursor-pointer hover:shadow-xl"
+              whileHover={{ scale: 1.05 }}
               onClick={() => filterProducts(category.name)}
             >
               <div
                 className="h-48 bg-cover bg-center"
                 style={{ backgroundImage: `url('${category.img}')` }}
               ></div>
-              <div className="p-4">
+              <div className="p-4 text-center">
                 <p className="text-gray-500 text-sm">Lorem Ipsum</p>
                 <h4 className="text-xl font-bold text-black">{category.name}</h4>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
 
-      {/* Filter and Sort Section */}
       <div className="max-w-7xl mx-auto p-6">
         <div className="flex justify-between items-center mb-4">
           <span>Showing 1 - {Math.min(loadMore, sortedProducts.length)} of {sortedProducts.length} results</span>
@@ -184,9 +164,8 @@ const Shop = () => {
         </div>
       </div>
 
-      {/* Products Section */}
       <div className="max-w-7xl mx-auto p-6">
-        <h3 className="text-3xl font-bold mb-4">Products</h3>
+        <h3 className="text-3xl font-bold mb-4 text-center">Products</h3>
         <div
           className={`grid ${viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6' : 'grid-cols-1 gap-4'}`}
         >
@@ -201,11 +180,7 @@ const Shop = () => {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5 }}
-                // Apply cursor movement effect with greater translation
-                style={{
-                  transform: `translate(${(cursorPosition.x - window.innerWidth / 2) / 25}px, ${(cursorPosition.y - window.innerHeight / 2) / 25}px)`,
-                  transition: 'transform 0.1s ease-out',
-                }}
+                whileHover={{ scale: 1.05 }}
               >
                 <Link to={`/${product._id}`} className={`${viewMode === 'list' ? 'w-1/3' : ''}`}>
                   <div
@@ -243,15 +218,15 @@ const Shop = () => {
       {/* Footer */}
       <footer className="bg-white py-10 text-black mt-10">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="flex flex-col items-center md:items-start">
-            <h4 className="text-2xl font-bold">MERA Bestie</h4>
+          <div className="flex flex-col items-center md:items-center">
+            <h4 className="text-2xl font-bold">Surprise Me</h4>
             <div className="flex space-x-6 text-2xl mt-4">
               <FaFacebook className="cursor-pointer hover:text-pink-500" />
               <FaInstagram className="cursor-pointer hover:text-pink-500" />
               <FaTwitter className="cursor-pointer hover:text-pink-500" />
             </div>
           </div>
-          <div className="text-center md:text-right">
+          <div className="text-center md:text-left">
             <p>
               Contact Information
               <br />

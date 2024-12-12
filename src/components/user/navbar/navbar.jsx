@@ -72,7 +72,8 @@ export default function Navbar() {
 
             {/* Logo */}
             <Link to="/HomePage" className="text-2xl flex items-center">
-              <span className="font-['Bodoni_MT'] font-bold text-xl">MERA Bestie</span>
+            <span className="font-['Bodoni_MT'] font-bold text-3xl text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 hover:scale-110 transform transition-all duration-300 ease-in-out">Surprise me</span>
+
             </Link>
 
             {/* Search Bar */}

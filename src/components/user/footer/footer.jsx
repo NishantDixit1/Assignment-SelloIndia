@@ -24,41 +24,43 @@ const Footer = () => {
         <div className="flex flex-wrap justify-between">
           {/* Logo and Social Media Section */}
           <div className="w-full lg:w-4/12 px-4">
-            <h2 className="text-3xl font-bold mb-4">MERA Bestie</h2>
-            <div className="flex mt-6 space-x-4">
-              <Link 
-                to="#" 
-                className="text-gray-600 hover:text-gray-800 transition-colors"
-                aria-label="Facebook"
-              >
-                <FaFacebook className="w-5 h-5" />
-              </Link>
-              <Link 
-                to="#" 
-                className="text-gray-600 hover:text-gray-800 transition-colors"
-                aria-label="Twitter"
-              >
-                <FaTwitter className="w-5 h-5" />
-              </Link>
-              <Link 
-                to="#" 
-                className="text-gray-600 hover:text-gray-800 transition-colors"
-                aria-label="Instagram"
-              >
-                <FaInstagram className="w-5 h-5" />
-              </Link>
-            </div>
+            <h2 className="text-3xl font-bold mb-4 text-right">Surprise Me</h2>
           </div>
 
           {/* Contact Information Section */}
           <div className="w-full lg:w-4/12 px-4">
             <h3 className="text-xl font-semibold mb-4">Contact Information</h3>
-            <address className="not-italic">
+            <address className="not-italic text-left">
               <p>3181 Skjdsd Sdbs Ahsdjad Ahbaja Adjadsa,</p>
               <p>Sgd Nshs Jbbb 12232,</p>
               <p>India</p>
             </address>
           </div>
+        </div>
+
+        {/* Social Media Icons in Center */}
+        <div className="flex justify-center mt-6 space-x-4">
+          <Link 
+            to="#" 
+            className="text-gray-600 hover:text-gray-800 transition-colors"
+            aria-label="Facebook"
+          >
+            <FaFacebook className="w-5 h-5" />
+          </Link>
+          <Link 
+            to="#" 
+            className="text-gray-600 hover:text-gray-800 transition-colors"
+            aria-label="Twitter"
+          >
+            <FaTwitter className="w-5 h-5" />
+          </Link>
+          <Link 
+            to="#" 
+            className="text-gray-600 hover:text-gray-800 transition-colors"
+            aria-label="Instagram"
+          >
+            <FaInstagram className="w-5 h-5" />
+          </Link>
         </div>
 
         {/* Copyright Section */}
